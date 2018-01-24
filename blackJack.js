@@ -13,8 +13,19 @@
 
 
 // ======================== | Functions | ==========================================
+/*
+var inquirer = require("inquirer");
 
-var Game = require('./black-jack');
+inquirer
+    .prompt({
+        type: "input",
+        message: "",
+        name: "##"
+    },
+    {
+
+    }
+   // })
 
 function playGame() {     // constructor : class : function
     var game = new Game(2)
@@ -31,7 +42,7 @@ function playGame() {     // constructor : class : function
         });
         console.log("");
     });
-
+// ======================== | Dealer Actions | ===================================
     dealer.on('turn', function() {
         console.log("Cards dealt");
         console.log(dealer.cardString());
@@ -48,7 +59,7 @@ function playGame() {     // constructor : class : function
     dealer.on('bust', function() {
         console.log("Dealer busts, You win!");
     });
-
+// ======================== | Player Actions | =================================
     player.on('turn', function (fn) {
         console.log("Your turn.");
 
@@ -95,3 +106,43 @@ function playGame() {     // constructor : class : function
     }
 
     playGame();
+*/
+    //============== | Better Alternative | ======================================
+    var readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    
+    var Deck = require('./classes/deck.js');
+    var Hand = require('./classes/hand.js');
+    
+    var deck = new Deck().shuffle();   // Create a new deck and shuffle it
+    
+    var player = new Hand();          // Create a new hand for the player
+    
+    player.add(deck.draw());          // The player draws two cards from the deck
+    player.add(deck.draw());
+    
+    var play = function() {
+        console.log(player.toString());
+    
+        readline.question("[H]it or [S]tay? ", function(answer) {
+            if (answer == 'h' || answer == 'H') {
+                player.add(deck.draw());
+    
+                if (player.bust()) {
+                    console.log("BUST!");
+                    console.log(player.toString());
+                    readline.close();
+                } else {
+                    console.log("HITTING!");
+                    play();
+                }
+            } else if (answer == 's' || answer == 'S') {
+                console.log("STAYING!");
+                console.log(player.toString());
+                readline.close();
+            }
+        });
+    }
+    play();
